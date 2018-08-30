@@ -69,3 +69,5 @@ fabric.properties
 # Mac
 .DS_Store
 *.iml
+/target
+target/
