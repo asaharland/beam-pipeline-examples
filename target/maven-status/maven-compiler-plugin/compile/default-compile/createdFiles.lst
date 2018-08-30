@@ -1,0 +1,6 @@
+com/harland/example/streaming/options/JsonPipelineOptions.class
+com/harland/example/streaming/StreamingJsonPipeline.class
+com/harland/example/utils/SchemaReader.class
+com/harland/example/batch/options/BigQueryImportOptions.class
+com/harland/example/batch/BigQueryImportPipeline.class
+com/harland/example/batch/BigQueryImportPipeline$RemoveHeaderRowFn.class

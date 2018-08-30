@@ -1,0 +1,5 @@
+/Users/asaharland/Documents/Projects/Admiral/beam-pipeline/src/main/java/com/harland/example/streaming/StreamingJsonPipeline.java
+/Users/asaharland/Documents/Projects/Admiral/beam-pipeline/src/main/java/com/harland/example/utils/SchemaReader.java
+/Users/asaharland/Documents/Projects/Admiral/beam-pipeline/src/main/java/com/harland/example/batch/BigQueryImportPipeline.java
+/Users/asaharland/Documents/Projects/Admiral/beam-pipeline/src/main/java/com/harland/example/streaming/options/JsonPipelineOptions.java
+/Users/asaharland/Documents/Projects/Admiral/beam-pipeline/src/main/java/com/harland/example/batch/options/BigQueryImportOptions.java
