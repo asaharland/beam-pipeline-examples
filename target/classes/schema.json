@@ -1,6 +1,0 @@
-{
-  "user": "STRING",
-  "transfer_to": "STRING",
-  "amount": "FLOAT",
-  "timestamp": "TIMESTAMP"
-}
