@@ -1,9 +1,7 @@
 # Apache Beam Examples
 
 ## About
-This repository contains Apache Beam code examples for running on Google Cloud Dataflow.
-
-The following examples are contained in this repository:
+This repository contains Apache Beam code examples for running on Google Cloud Dataflow. The following examples are contained in this repository:
 * Batch pipeline
     * Reading from AWS S3 and writing to Google BigQuery
     * Reading from Google Cloud Storage and writing to Google BigQuery
