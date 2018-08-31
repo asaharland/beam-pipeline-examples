@@ -10,8 +10,8 @@ import com.google.gson.JsonObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 public class SchemaReader {
 
@@ -20,12 +20,7 @@ public class SchemaReader {
   private static File schemaFile;
 
   public SchemaReader() {
-    schemaFile = new File(getClass().getClassLoader().getResource(SCHEMA_FILE).getFile());
-  }
-
-  public String[] getHeaderRow() throws IOException {
-    JsonObject jsonObject = readSchemaFile();
-    return jsonObject.keySet().toArray(new String[jsonObject.size()]);
+    schemaFile = new File(Objects.requireNonNull(getClass().getClassLoader().getResource(SCHEMA_FILE)).getFile());
   }
 
   public TableSchema getTableSchema() throws FileNotFoundException {

@@ -3,7 +3,6 @@ package com.harland.example.batch.options;
 import org.apache.beam.sdk.io.aws.options.S3Options;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
-import org.apache.beam.sdk.options.Hidden;
 import org.apache.beam.sdk.options.PipelineOptions;
 
 public interface BigQueryImportOptions extends PipelineOptions, S3Options {
@@ -22,14 +21,12 @@ public interface BigQueryImportOptions extends PipelineOptions, S3Options {
 
   @Description("AWS S3 Key ID")
   @Default.String("KEY")
-  @Hidden
   String getAwsAccessKey();
 
   void setAwsAccessKey(String awsAccessKey);
 
   @Description("AWS S3 Secret Key")
   @Default.String("SECRET KEY")
-  @Hidden
   String getAwsSecretKey();
 
   void setAwsSecretKey(String awsSecretKey);

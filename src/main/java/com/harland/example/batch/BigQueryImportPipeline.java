@@ -1,17 +1,22 @@
 package com.harland.example.batch;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.google.api.services.bigquery.model.TableRow;
 import com.google.api.services.bigquery.model.TableSchema;
+import com.harland.example.batch.model.TransferRecord;
+import com.harland.example.batch.options.AwsOptionsParser;
 import com.harland.example.batch.options.BigQueryImportOptions;
+import com.harland.example.batch.transform.ConvertToTransferRecordFn;
+import com.harland.example.utils.MathUtils;
 import com.harland.example.utils.SchemaReader;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
-import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.Sum;
+import org.apache.beam.sdk.values.KV;
+import org.apache.beam.sdk.values.TypeDescriptors;
 
 import java.io.IOException;
 
@@ -24,59 +29,49 @@ public class BigQueryImportPipeline {
   public static void main(String... args) throws IOException {
     BigQueryImportOptions options =
         PipelineOptionsFactory.fromArgs(args).as(BigQueryImportOptions.class);
-    formatOptions(options);
+
+    // Configure AWS specific options
+    AwsOptionsParser.formatOptions(options);
+
     runPipeline(options);
   }
 
-  public static void runPipeline(BigQueryImportOptions options) throws IOException {
+  private static void runPipeline(BigQueryImportOptions options) throws IOException {
     Pipeline p = Pipeline.create(options);
 
-    SchemaReader schemaReader = new SchemaReader();
-    String[] headerRow = schemaReader.getHeaderRow();
-    TableSchema schema = schemaReader.getTableSchema();
+    TableSchema schema = new SchemaReader().getTableSchema();
+    final String bqColumnUser = schema.getFields().get(0).getName();
+    final String bqColumnAmount = schema.getFields().get(1).getName();
 
+    // Read all text files from either a Google Cloud Storage or AWS S3 bucket.
     p.apply("ReadFromStorage", TextIO.read().from(options.getBucketUrl() + "/*"))
-        .apply("ConvertToTableRow", ParDo.of(new RemoveHeaderRowFn(headerRow)))
+
+        // Convert our CSV rows into a TransferRecord object.
+        .apply("ConvertToTransferRecord", ParDo.of(new ConvertToTransferRecordFn()))
+
+        // Map our elements into KV pairs by user.
+        .apply(
+            "CreateKVPairs",
+            MapElements.into(
+                    TypeDescriptors.kvs(TypeDescriptors.strings(), TypeDescriptors.doubles()))
+                .via((TransferRecord record) -> KV.of(record.getUser(), record.getAmount())))
+
+        // Sum our KV pairs for each user.
+        .apply("SumAmountsPerUser", Sum.doublesPerKey())
+
+        // Write the result to BigQuery.
         .apply(
             "WriteToBigQuery",
-            BigQueryIO.writeTableRows()
+            BigQueryIO.<KV<String, Double>>write()
                 .to(options.getBqTableName())
                 .withSchema(schema)
+                .withFormatFunction(
+                    (KV<String, Double> record) ->
+                        new TableRow()
+                            .set(bqColumnUser, record.getKey())
+                            .set(bqColumnAmount, MathUtils.roundToTwoDecimals(record.getValue())))
                 .withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED)
                 .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND));
     p.run();
   }
-
-  private static class RemoveHeaderRowFn extends DoFn<String, TableRow> {
-    private String[] headerRow;
-
-    public RemoveHeaderRowFn(String[] headerRow) {
-      this.headerRow = headerRow;
-    }
-
-    @ProcessElement
-    public void processElement(@Element String row, OutputReceiver<TableRow> receiver) {
-      String[] fields = row.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-      if (!fields[0].equals(headerRow[0])) {
-        TableRow tableRow = new TableRow();
-        for (int i = 0; i < fields.length; i++) {
-          tableRow.set(headerRow[i], fields[i]);
-        }
-        receiver.output(tableRow);
-      }
-    }
-  }
-
-  private static void formatOptions(BigQueryImportOptions options) {
-    if (options.getBucketUrl().startsWith("s3")) {
-      options.setAwsCredentialsProvider(
-          new AWSStaticCredentialsProvider(
-              new BasicAWSCredentials(options.getAwsAccessKey(), options.getAwsSecretKey())));
-    }
-
-    if (options.getAwsRegion() == null) {
-      options.setAwsRegion("eu-west-1");
-    }
-  }
-
 }
