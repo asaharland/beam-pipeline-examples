@@ -1,13 +1,13 @@
 package com.harland.example.batch;
 
 import com.google.api.services.bigquery.model.TableRow;
-import com.google.api.services.bigquery.model.TableSchema;
+import com.harland.example.batch.bigquery.Schema;
 import com.harland.example.batch.model.TransferRecord;
 import com.harland.example.batch.options.AwsOptionsParser;
 import com.harland.example.batch.options.BigQueryImportOptions;
 import com.harland.example.batch.transform.ConvertToTransferRecordFn;
 import com.harland.example.utils.MathUtils;
-import com.harland.example.utils.SchemaReader;
+import com.harland.example.utils.JsonSchemaReader;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
@@ -26,6 +26,8 @@ import java.io.IOException;
  */
 public class BigQueryImportPipeline {
 
+  private static final String SCHEMA_FILE = "schema.json";
+
   public static void main(String... args) throws IOException {
     BigQueryImportOptions options =
         PipelineOptionsFactory.fromArgs(args).as(BigQueryImportOptions.class);
@@ -39,9 +41,9 @@ public class BigQueryImportPipeline {
   private static void runPipeline(BigQueryImportOptions options) throws IOException {
     Pipeline p = Pipeline.create(options);
 
-    SchemaReader schema = new SchemaReader();
-    String bqColumnUser = schema.getColumnName(0);
-    String bqColumnAmount = schema.getColumnName(1);
+    Schema schema = new Schema(JsonSchemaReader.readSchemaFile(SCHEMA_FILE));
+    String bqColUser = schema.getColumnName(0);
+    String bqColAmount = schema.getColumnName(1);
 
     // Read all text files from either a Google Cloud Storage or AWS S3 bucket.
     p.apply("ReadFromStorage", TextIO.read().from(options.getBucketUrl() + "/*"))
@@ -68,8 +70,8 @@ public class BigQueryImportPipeline {
                 .withFormatFunction(
                     (KV<String, Double> record) ->
                         new TableRow()
-                            .set(bqColumnUser, record.getKey())
-                            .set(bqColumnAmount, MathUtils.roundToTwoDecimals(record.getValue())))
+                            .set(bqColUser, record.getKey())
+                            .set(bqColAmount, MathUtils.roundToTwoDecimals(record.getValue())))
                 .withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED)
                 .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND));
     p.run();

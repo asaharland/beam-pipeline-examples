@@ -1,8 +1,9 @@
 package com.harland.example.streaming;
 
 import com.google.api.services.bigquery.model.TableRow;
+import com.harland.example.batch.bigquery.Schema;
 import com.harland.example.streaming.options.JsonPipelineOptions;
-import com.harland.example.utils.SchemaReader;
+import com.harland.example.utils.JsonSchemaReader;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -17,6 +18,8 @@ import java.util.Map;
 
 public class StreamingJsonPipeline {
 
+  private static final String SCHEMA_FILE = "schema.json";
+
   public static void main(String... args) throws FileNotFoundException {
     JsonPipelineOptions options =
         PipelineOptionsFactory.fromArgs(args).withValidation().as(JsonPipelineOptions.class);
@@ -26,13 +29,15 @@ public class StreamingJsonPipeline {
   private static void runPipeline(JsonPipelineOptions options) throws FileNotFoundException {
     Pipeline p = Pipeline.create(options);
 
+    Schema schema = new Schema(JsonSchemaReader.readSchemaFile(SCHEMA_FILE));
+
     PCollection<String> messages =
         p.apply("ReadFromPubSub", PubsubIO.readStrings().fromTopic(options.getTopic()));
     messages.apply(
         "WriteToBigQuery",
         BigQueryIO.<String>write()
             .to(options.getBqTableName())
-            .withSchema(new SchemaReader().getTableSchema())
+            .withSchema(schema.getTableSchema())
             .withFormatFunction(
                 (String message) -> {
                   TableRow tableRow = new TableRow();
