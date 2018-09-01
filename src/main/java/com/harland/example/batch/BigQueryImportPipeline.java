@@ -39,9 +39,9 @@ public class BigQueryImportPipeline {
   private static void runPipeline(BigQueryImportOptions options) throws IOException {
     Pipeline p = Pipeline.create(options);
 
-    TableSchema schema = new SchemaReader().getTableSchema();
-    final String bqColumnUser = schema.getFields().get(0).getName();
-    final String bqColumnAmount = schema.getFields().get(1).getName();
+    SchemaReader schema = new SchemaReader();
+    String bqColumnUser = schema.getColumnName(0);
+    String bqColumnAmount = schema.getColumnName(1);
 
     // Read all text files from either a Google Cloud Storage or AWS S3 bucket.
     p.apply("ReadFromStorage", TextIO.read().from(options.getBucketUrl() + "/*"))
@@ -64,7 +64,7 @@ public class BigQueryImportPipeline {
             "WriteToBigQuery",
             BigQueryIO.<KV<String, Double>>write()
                 .to(options.getBqTableName())
-                .withSchema(schema)
+                .withSchema(schema.getTableSchema())
                 .withFormatFunction(
                     (KV<String, Double> record) ->
                         new TableRow()

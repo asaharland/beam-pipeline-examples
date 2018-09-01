@@ -31,6 +31,10 @@ public class SchemaReader {
     }
     return new TableSchema().setFields(immutableListBuilder.build());
   }
+  
+  public String getColumnName(int columnPosition) throws FileNotFoundException {
+    return getTableSchema().getFields().get(columnPosition).getName();
+  }
 
   private JsonObject readSchemaFile() throws FileNotFoundException {
     return new Gson().fromJson(new FileReader(schemaFile), JsonObject.class);
