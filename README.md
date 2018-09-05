@@ -25,7 +25,6 @@ This is purely fictitious example that covers the following steps: 
 * Create a BigQuery dataset called finance. Keep note of the fully qualified dataset name which is in the format projectName:finance
 * Upload the transfers_july.csv to your AWS S3/Google Cloud Storage bucket
 
-
 #### Reading from AWS S3 and writing to BigQuery
 ```
 mvn compile exec:java \

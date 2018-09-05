@@ -1,11 +1,10 @@
 package com.harland.example.streaming.options;
 
-import org.apache.beam.sdk.io.aws.options.S3Options;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 
-public interface StreamingFilePipelineOptions extends PipelineOptions, S3Options {
+public interface StreamingFilePipelineOptions extends PipelineOptions {
 
   @Description("BigQuery Table Name")
   @Default.String("my-project:my_dataset.my_table")
