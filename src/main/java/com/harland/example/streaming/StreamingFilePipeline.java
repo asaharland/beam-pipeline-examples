@@ -1,11 +1,9 @@
 package com.harland.example.streaming;
 
 import com.google.api.services.bigquery.model.TableRow;
-import com.harland.example.batch.bigquery.Schema;
-import com.harland.example.batch.model.TransferRecord;
-import com.harland.example.batch.options.AwsOptionsParser;
-import com.harland.example.batch.options.BigQueryImportOptions;
-import com.harland.example.batch.transform.ConvertToTransferRecordFn;
+import com.harland.example.bigquery.Schema;
+import com.harland.example.model.TransferRecord;
+import com.harland.example.transform.ConvertToTransferRecordFn;
 import com.harland.example.streaming.options.StreamingFilePipelineOptions;
 import com.harland.example.utils.JsonSchemaReader;
 import com.harland.example.utils.MathUtils;
@@ -42,7 +40,11 @@ public class StreamingFilePipeline {
 
     p.apply(
             "ReadFromStorage",
-            TextIO.read().from("").watchForNewFiles(Duration.ZERO, Watch.Growth.never()))
+            TextIO.read()
+                .from(options.getBucketUrl())
+                .watchForNewFiles(Duration.ZERO, Watch.Growth.never()))
+
+        // Convert each CSV row to a transfer record object
         .apply("ConvertToTransferRecord", ParDo.of(new ConvertToTransferRecordFn()))
 
         // Map our elements into KV pairs by user.
@@ -68,6 +70,7 @@ public class StreamingFilePipeline {
                             .set(bqColAmount, MathUtils.roundToTwoDecimals(record.getValue())))
                 .withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED)
                 .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND));
+
     p.run();
   }
 }

@@ -42,7 +42,7 @@ mvn compile exec:java \
 --tempLocation=gs://<DATAFLOW BUCKET>/temp/"
 ```
 
-#### Reading from AWS S3 and writing to BigQuery
+#### Reading from Google Cloud Storage and writing to BigQuery
 ```
 mvn compile exec:java \
 -Dexec.mainClass=com.harland.example.batch.BigQueryImportPipeline \

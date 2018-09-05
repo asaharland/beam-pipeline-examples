@@ -1,4 +1,4 @@
-package com.harland.example.batch.model;
+package com.harland.example.model;
 
 import java.io.Serializable;
 

@@ -1,6 +1,6 @@
-package com.harland.example.batch.transform;
+package com.harland.example.transform;
 
-import com.harland.example.batch.model.TransferRecord;
+import com.harland.example.model.TransferRecord;
 import org.apache.beam.sdk.transforms.DoFn;
 
 /**
