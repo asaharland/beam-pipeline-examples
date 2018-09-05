@@ -7,7 +7,7 @@ This repository contains Apache Beam code examples for running on Google Cloud D
     * Reading from Google Cloud Storage and writing to Google BigQuery
 
 ## Batch Pipeline
-The goal of the example code is to calculate the total amount transferred for each user_id in the transfers_july.csv shown in figure 1. 
+The goal of the example code is to calculate the total amount transferred for each user_id in the transfers_july.csv.
 This is purely fictitious example that covers the following steps: 
 * Reads a CSV file from AWS S3 
 * Converts the CSV file into a Java Object
