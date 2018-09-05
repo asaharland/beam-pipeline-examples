@@ -1,4 +1,4 @@
-package com.harland.example.bigquery;
+package com.harland.example.common.bigquery;
 
 import com.google.api.services.bigquery.model.TableFieldSchema;
 import com.google.api.services.bigquery.model.TableSchema;

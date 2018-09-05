@@ -1,4 +1,4 @@
-package com.harland.example.model;
+package com.harland.example.common.model;
 
 import java.io.Serializable;
 

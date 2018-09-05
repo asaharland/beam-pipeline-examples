@@ -1,10 +1,11 @@
-package com.harland.example.streaming.options;
+package com.harland.example.common.options;
 
+import org.apache.beam.sdk.io.aws.options.S3Options;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 
-public interface StreamingFilePipelineOptions extends PipelineOptions {
+public interface BigQueryImportOptions extends PipelineOptions, S3Options {
 
   @Description("BigQuery Table Name")
   @Default.String("my-project:my_dataset.my_table")
@@ -17,4 +18,16 @@ public interface StreamingFilePipelineOptions extends PipelineOptions {
   String getBucketUrl();
 
   void setBucketUrl(String bucketUrl);
+
+  @Description("AWS S3 Key ID")
+  @Default.String("KEY")
+  String getAwsAccessKey();
+
+  void setAwsAccessKey(String awsAccessKey);
+
+  @Description("AWS S3 Secret Key")
+  @Default.String("SECRET KEY")
+  String getAwsSecretKey();
+
+  void setAwsSecretKey(String awsSecretKey);
 }

@@ -1,13 +1,13 @@
 package com.harland.example.batch;
 
 import com.google.api.services.bigquery.model.TableRow;
-import com.harland.example.bigquery.Schema;
-import com.harland.example.model.TransferRecord;
-import com.harland.example.batch.options.AwsOptionsParser;
-import com.harland.example.batch.options.BigQueryImportOptions;
-import com.harland.example.transform.ConvertToTransferRecordFn;
-import com.harland.example.utils.MathUtils;
-import com.harland.example.utils.JsonSchemaReader;
+import com.harland.example.common.bigquery.Schema;
+import com.harland.example.common.model.TransferRecord;
+import com.harland.example.common.options.AwsOptionsParser;
+import com.harland.example.common.options.BigQueryImportOptions;
+import com.harland.example.common.transform.ConvertToTransferRecordFn;
+import com.harland.example.common.utils.MathUtils;
+import com.harland.example.common.utils.JsonSchemaReader;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;

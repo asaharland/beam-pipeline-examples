@@ -1,4 +1,4 @@
-package com.harland.example.utils;
+package com.harland.example.common.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

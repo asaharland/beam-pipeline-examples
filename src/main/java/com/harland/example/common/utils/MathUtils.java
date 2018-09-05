@@ -1,4 +1,4 @@
-package com.harland.example.utils;
+package com.harland.example.common.utils;
 
 public class MathUtils {
 

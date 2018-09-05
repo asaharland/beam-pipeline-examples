@@ -1,4 +1,4 @@
-package com.harland.example.batch.options;
+package com.harland.example.common.options;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
